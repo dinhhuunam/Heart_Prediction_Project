@@ -13,21 +13,3 @@ code {
 }  */
 
 /* index.css */
-body {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;  /* Fullscreen */
-  background-color: #e8f4f8;
-}
-
-/* Đảm bảo tất cả font chữ hiển thị một cách dễ đọc */
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  height: 100%;
-}

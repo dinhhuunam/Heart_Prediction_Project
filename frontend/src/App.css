@@ -39,77 +39,65 @@
  */
 
 /* Căn giữa các nội dung trong toàn bộ ứng dụng */
-.App {
-  text-align: center;
-  min-height: 100vh; /* Đảm bảo chiều cao của trang đủ lớn để cuộn */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* Căn trên cho trang */
-  overflow-y: auto; /* Cho phép cuộn trang khi nội dung vượt quá chiều cao */
-}
+
 
 /* Tiêu đề form không bám cố định ở trên cùng mà vẫn cuộn */
-h1 {
-  font-size: 28px;
-  font-weight: bold;
-  text-align: center;
-  color: #333;
-  margin-bottom: 20px;
-  /* Loại bỏ position: sticky và top: 0 */
-  /* Tiêu đề sẽ cuộn cùng với các trường nhập liệu */
-}
-
-/* Cấu trúc của container chứa toàn bộ form */
-.container {
-  max-width: 800px; /* Giới hạn chiều rộng tối đa */
-  margin: 20px auto; /* Căn giữa container */
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  overflow-y: auto; /* Cho phép cuộn cả container nếu cần */
-  height: 100vh; /* Đảm bảo chiều cao phù hợp với màn hình */
-}
-
-/* Các trường nhập liệu có thể cuộn bên trong container */
-.form-container {
-  width: 100%;
-  overflow-y: auto; /* Cho phép cuộn dọc trong phần này */
-  max-height: 600px; /* Giới hạn chiều cao của phần nội dung */
-  padding-right: 20px;
-}
-
-/* Các trường nhập liệu */
-.form-group {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-label {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
+body {
   display: block;
-  margin-bottom: 8px;
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  background-image: url(/src/niti.jpg);
+  background-size: cover;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+.head_content {
+  display: block;
+  unicode-bidi: isolate;
+  background-color: white;
+}
+.text-center {
+  color: #333;
+  margin: 30px 0;
+  display: block;
+  font-size: 2em;
+  margin-block-start: 0.67em;
+  margin-block-end: 0.67em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+  unicode-bidi: isolate;
+}
+form {
+  display: block;
+  background: #fff;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+label {
+  display: block;
+  text-align: left;
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 18px;
+  cursor: default;
 }
 
-input.form-control {
+input {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
+  padding: 10px;
+  margin-bottom: 15px;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 5px;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
+  border-radius: 4px;
+  font-size: 16px;
 }
-
+input[type="text" i] {
+  padding-inline: 2px;
+}
 /* Nút Predict */
 button {
   width: 100%;
@@ -152,21 +140,3 @@ button:active {
   transform: translateY(0); /* Di chuyển lên vị trí ban đầu */
 }
 
-/* Phản hồi thiết kế cho màn hình nhỏ */
-@media (max-width: 768px) {
-  .container {
-    width: 90%; /* Thay đổi chiều rộng container trên màn hình nhỏ */
-  }
-
-  h1 {
-    font-size: 24px; /* Giảm kích thước font cho h1 trên màn hình nhỏ */
-  }
-
-  input.form-control {
-    font-size: 14px; /* Điều chỉnh kích thước font input */
-  }
-
-  button {
-    font-size: 16px; /* Giảm kích thước font nút button */
-  }
-}
