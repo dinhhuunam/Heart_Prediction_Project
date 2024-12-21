@@ -55,7 +55,6 @@ body {
 .head_content {
   display: block;
   unicode-bidi: isolate;
-  background-color: white;
 }
 .text-center {
   color: #333;
