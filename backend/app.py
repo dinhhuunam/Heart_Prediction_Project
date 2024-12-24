@@ -40,10 +40,23 @@ class TabularCNN(nn.Module):
         return x
 
 # Load model and scaler
-best_model = TabularCNN(num_filters=16, fc1_size=64)  # Set your model's parameters here
-model_data = torch.load(model_path)
-best_model.load_state_dict(model_data["state_dict"])
+# best_model = TabularCNN(num_filters=16, fc1_size=64)  # Set your model's parameters here
+# model_data = torch.load(model_path, weights_only=True)
+# best_model.load_state_dict(model_data["state_dict"])
+# best_model.eval()
+
+# Load model and scaler
+model_data = torch.load(model_path, weights_only=True)  # Load model metadata
+
+# Lấy các tham số từ file checkpoint
+num_filters = model_data.get("num_filters", 16)  # Mặc định là 16 nếu không tồn tại
+fc1_size = model_data.get("fc1_size", 64)  # Mặc định là 64 nếu không tồn tại
+
+# Khởi tạo mô hình với đúng tham số
+best_model = TabularCNN(num_filters=num_filters, fc1_size=fc1_size)
+best_model.load_state_dict(model_data["state_dict"])  # Load weights
 best_model.eval()
+
 
 scaler = joblib.load(scaler_path)
 

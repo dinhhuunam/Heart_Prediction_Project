@@ -268,6 +268,7 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, 
 cnn_model = CNN_model(X_train, y_train, X_test, y_test)
 cnn_model.train_and_return_best()
 
+
 # Ví dụ đầu vào từ người dùng
 input_data = np.array([[63,1,1,145,233,1,2,150,0,2.3,3,0,6]])
 
