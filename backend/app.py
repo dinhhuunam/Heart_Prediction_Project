@@ -3,19 +3,15 @@ import pandas as pd
 from flask_cors import CORS # CORS for handling Cross-Origin Resource Sharing
 from model import CNN_model
 import torch
-import os
-import pathlib
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-import joblib
 import torch.nn as nn
 from flask_cors import CORS
 
-# Load the trained model and scaler
+# Load the trained model
 model_path = 'best_model.pth'
-scaler_path = 'scaler.pkl'
 
-# Define the CNN model (same as before)
+# Define the CNN model
 class TabularCNN(nn.Module):
     def __init__(self, num_filters=16, fc1_size=64):
         super(TabularCNN, self).__init__()
@@ -39,13 +35,7 @@ class TabularCNN(nn.Module):
         x = self.fc2(x)
         return x
 
-# Load model and scaler
-# best_model = TabularCNN(num_filters=16, fc1_size=64)  # Set your model's parameters here
-# model_data = torch.load(model_path, weights_only=True)
-# best_model.load_state_dict(model_data["state_dict"])
-# best_model.eval()
-
-# Load model and scaler
+# Load model
 model_data = torch.load(model_path, weights_only=True)  # Load model metadata
 
 # Lấy các tham số từ file checkpoint
@@ -57,8 +47,9 @@ best_model = TabularCNN(num_filters=num_filters, fc1_size=fc1_size)
 best_model.load_state_dict(model_data["state_dict"])  # Load weights
 best_model.eval()
 
+means = np.load('means.npy')
+std_devs = np.load('std_devs.npy')
 
-scaler = joblib.load(scaler_path)
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -80,13 +71,18 @@ def predict():
     # Convert input data to DataFrame
     input_df = pd.DataFrame([data])
     
-    # Prepare input data (scaling)
-    X_scaled = scaler.transform(input_df)
-    
-    # Reshape input for CNN
+    # Chuyển đổi tất cả giá trị trong input_df sang float
+    try:
+        input_df = input_df.astype(float)
+    except ValueError as e:
+        return jsonify({"error": f"Invalid input data: {str(e)}"}), 400
+
+    # Chuẩn hóa dữ liệu đầu vào
+    input_normalized = (input_df.values - means) / std_devs
+
     side_length = 4
-    X_scaled_padded = np.pad(X_scaled, ((0, 0), (0, 3)), 'constant')
-    X_cnn = X_scaled_padded.reshape(-1, 1, side_length, side_length).astype(np.float32)
+    input_padded = np.pad(input_normalized, ((0, 0), (0, 3)), 'constant')
+    X_cnn = input_padded.reshape(-1, 1, side_length, side_length).astype(np.float32)
 
     # Convert input to tensor
     X_tensor = torch.tensor(X_cnn, dtype=torch.float32)

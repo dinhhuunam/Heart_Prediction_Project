@@ -1,38 +1,13 @@
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import os
-import pickle
-import torch
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import matplotlib.pyplot as plt
-from sklearn.model_selection import cross_val_score, KFold
-from sklearn.model_selection import train_test_split, cross_validate,  cross_val_score, GridSearchCV
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score
-from sklearn.ensemble import RandomForestClassifier,StackingClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier, BaggingClassifier
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
-from xgboost import XGBClassifier
-import tensorflow as tf
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-import numpy as np
+from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
 import pathlib
-import joblib
 
 print("Current working directory:", os.getcwd())
 # Tìm tệp cleveland.csv dựa trên vị trí file app.py
@@ -227,24 +202,6 @@ class CNN_model:
         print(f"Best model loaded from {file_path} with num_filters={num_filters}, fc1_size={fc1_size}.")
 
 # LOAD DATA
-# data = pd.read_csv(csv_path, header=None)
-# data.columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalac', 'exang',
-#                 'oldpeak', 'slope', 'ca', 'thal', 'target']
-# data['target'] = data.target.map({0: 0, 1: 1, 2: 1, 3: 1, 4: 1})
-# data['thal'] = data.thal.fillna(data.thal.mean())
-# data['ca'] = data.ca.fillna(data.ca.mean())
-# X = data.drop(columns=['target']).values
-# y = data['target'].values
-# scaler = StandardScaler()
-# X = scaler.fit_transform(X)
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-
-# # PREDICT
-# cnn_model = CNN_model(X_train, y_train, X_test, y_test)
-# cnn_model.train_and_return_best()
-
-
-# LOAD DATA
 data = pd.read_csv(csv_path, header=None)
 data.columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalac', 'exang',
                 'oldpeak', 'slope', 'ca', 'thal', 'target']
@@ -254,31 +211,34 @@ data['ca'] = data.ca.fillna(data.ca.mean())
 X = data.drop(columns=['target']).values
 y = data['target'].values
 
-# StandardScaler and data preparation
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)  # Scale the features
+# Tính toán mean và std theo cách thủ công
+means = np.mean(X, axis=0)  # Trung bình của từng đặc trưng
+std_devs = np.std(X, axis=0)  # Độ lệch chuẩn của từng đặc trưng
 
-# Save the scaler to a file
-joblib.dump(scaler, 'scaler.pkl')  # Save the scaler for later use in Flask API
+# Lưu các giá trị mean và std vào file
+np.save('means.npy', means)
+np.save('std_devs.npy', std_devs)
+
+# Chuẩn hóa dữ liệu đầu vào
+X_normalized = (X - means) / std_devs 
 
 # Split the data into train and test sets
-X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42, stratify=y)
+X_train, X_test, y_train, y_test = train_test_split(X_normalized, y, test_size=0.2, random_state=42, stratify=y)
 
 # PREDICT
 cnn_model = CNN_model(X_train, y_train, X_test, y_test)
 cnn_model.train_and_return_best()
 
-
-# Ví dụ đầu vào từ người dùng
-input_data = np.array([[63,1,1,145,233,1,2,150,0,2.3,3,0,6]])
-
-# Chuẩn bị dữ liệu đầu vào theo cách tương tự
-input_data_scaled = scaler.transform(input_data)
+# Dữ liệu đầu vào người dùng
+# input_data = np.array([[58,1,3,145,260,1,1,125,1,2.3,0,2,3]])
+input_data = np.array([[35,0,0,110,180,0,0,180,0,0.0,2,0,2]])
+# Chuẩn bị dữ liệu đầu vào theo cách thủ công
+input_data_normalized = (input_data - means) / std_devs
 
 # Dự đoán kết quả từ mô hình
 cnn_model = CNN_model(X_train, y_train, X_test, y_test)
 cnn_model.load_best_model('backend/best_model.pth')
-prediction = cnn_model.predict(input_data_scaled)
+prediction = cnn_model.predict(input_data_normalized)
 
 # In kết quả
 print("Predicted result:", prediction)
